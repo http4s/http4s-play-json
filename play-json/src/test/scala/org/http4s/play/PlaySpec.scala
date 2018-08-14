@@ -23,7 +23,7 @@ class PlaySpec extends JawnDecodeSupportSpec[JsValue] {
 
     "have json content type" in {
       jsonEncoder.headers.get(`Content-Type`) must_== Some(
-        `Content-Type`(MediaType.`application/json`))
+        `Content-Type`(MediaType.application.json))
     }
 
     "write JSON" in {
@@ -35,7 +35,7 @@ class PlaySpec extends JawnDecodeSupportSpec[JsValue] {
   "jsonEncoderOf" should {
     "have json content type" in {
       jsonEncoderOf[IO, Foo].headers.get(`Content-Type`) must_== Some(
-        `Content-Type`(MediaType.`application/json`))
+        `Content-Type`(MediaType.application.json))
     }
 
     "write compact JSON" in {
@@ -47,7 +47,7 @@ class PlaySpec extends JawnDecodeSupportSpec[JsValue] {
   "jsonOf" should {
     "decode JSON from a Play decoder" in {
       val result = jsonOf[IO, Foo].decode(
-        Request[IO]().withBody(Json.obj("bar" -> JsNumber(42)): JsValue).unsafeRunSync,
+        Request[IO]().withEntity(Json.obj("bar" -> JsNumber(42)): JsValue),
         strict = true)
       result.value.unsafeRunSync must_== Right(Foo(42))
     }
@@ -64,21 +64,21 @@ class PlaySpec extends JawnDecodeSupportSpec[JsValue] {
 
   "Message[F].decodeJson[A]" should {
     "decode json from a message" in {
-      val req = Request[IO]().withBody(Json.toJson(foo))
-      req.flatMap(_.decodeJson[Foo]) must returnValue(foo)
+      val req = Request[IO]().withEntity(Json.toJson(foo))
+      req.decodeJson[Foo] must returnValue(foo)
     }
 
     "fail on invalid json" in {
-      val req = Request[IO]().withBody(Json.toJson(List(13, 14)))
-      req.flatMap(_.decodeJson[Foo]).attempt.unsafeRunSync must beLeft
+      val req = Request[IO]().withEntity(Json.toJson(List(13, 14)))
+      req.decodeJson[Foo].attempt.unsafeRunSync must beLeft
     }
   }
 
   "PlayEntityCodec" should {
     "decode json without defining EntityDecoder" in {
       import org.http4s.play.PlayEntityDecoder._
-      val request = Request[IO]().withBody(Json.obj("bar" -> JsNumber(42)): JsValue)
-      val result = request.flatMap(_.as[Foo])
+      val request = Request[IO]().withEntity(Json.obj("bar" -> JsNumber(42)): JsValue)
+      val result = request.as[Foo]
       result.unsafeRunSync must_== Foo(42)
     }
 

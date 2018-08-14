@@ -43,7 +43,7 @@ trait PlayInstances {
         val bytes = json.toString.getBytes("UTF8")
         Chunk.bytes(bytes)
       }
-      .withContentType(`Content-Type`(MediaType.`application/json`))
+      .withContentType(`Content-Type`(MediaType.application.json))
 
   implicit val writesUri: Writes[Uri] =
     Writes.contravariantfunctorWrites.contramap[String, Uri](implicitly[Writes[String]], _.toString)
