@@ -19,14 +19,70 @@ package play.test // Get out of play package so we can import custom instances
 
 import _root_.play.api.libs.json._
 import cats.effect.IO
+import cats.syntax.all._
+import fs2.Stream
+import fs2.text.utf8
+import munit.CatsEffectSuite
+import munit.ScalaCheckSuite
 import org.http4s.headers.`Content-Type`
-import org.http4s.jawn.JawnDecodeSupportSuite
 import org.http4s.laws.discipline.arbitrary
 import org.http4s.play._
 import org.scalacheck.Prop.forAll
 
 // Originally based on CirceSpec
-class PlaySuite extends JawnDecodeSupportSuite[JsValue] {
+class PlaySuite extends CatsEffectSuite with ScalaCheckSuite {
+
+  def writeToString[A](a: A)(implicit W: EntityEncoder[IO, A]): IO[String] =
+    Stream
+      .emit(W.toEntity(a))
+      .flatMap(_.body)
+      .through(utf8.decode)
+      .foldMonoid
+      .compile
+      .last
+      .map(_.getOrElse(""))
+
+  def testJsonDecoder(decoder: EntityDecoder[IO, JsValue]): Unit = {
+    test("return right when the entity is valid") {
+      val resp = Response[IO](Status.Ok).withEntity("""{"valid": true}""")
+      decoder.decode(resp, strict = false).value.map(_.isRight).assert
+    }
+
+    testErrors(decoder)(
+      emptyBody = { case MalformedMessageBodyFailure("Invalid JSON: empty body", _) => true },
+      parseError = { case MalformedMessageBodyFailure("Invalid JSON", _) => true },
+    )
+  }
+
+  def testJsonDecoderError(decoder: EntityDecoder[IO, JsValue])(
+      emptyBody: PartialFunction[DecodeFailure, Boolean],
+      parseError: PartialFunction[DecodeFailure, Boolean],
+  ): Unit =
+    test("json decoder with custom errors") {
+      testErrors(decoder)(emptyBody = emptyBody, parseError = parseError)
+    }
+
+  def testErrors(decoder: EntityDecoder[IO, JsValue])(
+      emptyBody: PartialFunction[DecodeFailure, Boolean],
+      parseError: PartialFunction[DecodeFailure, Boolean],
+  ): Unit = {
+    test("return a ParseFailure when the entity is invalid") {
+      val resp = Response[IO](Status.Ok).withEntity("""garbage""")
+      decoder
+        .decode(resp, strict = false)
+        .value
+        .map(_.leftMap(r => emptyBody.applyOrElse(r, (_: DecodeFailure) => false)))
+    }
+
+    test("return a ParseFailure when the entity is empty") {
+      val resp = Response[IO](Status.Ok).withEntity("")
+      decoder
+        .decode(resp, strict = false)
+        .value
+        .map(_.leftMap(r => parseError.applyOrElse(r, (_: DecodeFailure) => false)))
+    }
+  }
+
   testJsonDecoder(jsonDecoder)
 
   sealed case class Foo(bar: Int)
