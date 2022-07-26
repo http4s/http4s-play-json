@@ -10,7 +10,7 @@ ThisBuild / scalaVersion := Scala213
 
 lazy val root = project.in(file(".")).aggregate(playJson).enablePlugins(NoPublishPlugin)
 
-val http4sVersion = "0.23.13"
+val http4sVersion = "0.23.14"
 val playJsonVersion = "2.9.2"
 val munitVersion = "0.7.29"
 val munitCatsEffectVersion = "1.0.7"
