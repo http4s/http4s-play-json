@@ -4,14 +4,14 @@ ThisBuild / developers := List(
   tlGitHubDev("rossabaker", "Ross A. Baker")
 )
 
-val Scala213 = "2.13.8"
+val Scala213 = "2.13.10"
 ThisBuild / crossScalaVersions := Seq("2.12.15", Scala213)
 ThisBuild / scalaVersion := Scala213
 
 lazy val root = project.in(file(".")).aggregate(playJson).enablePlugins(NoPublishPlugin)
 
 val http4sVersion = "0.23.14"
-val playJsonVersion = "2.9.2"
+val playJsonVersion = "2.9.3"
 val munitVersion = "0.7.29"
 val munitCatsEffectVersion = "1.0.7"
 
