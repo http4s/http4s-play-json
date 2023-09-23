@@ -5,9 +5,16 @@ ThisBuild / developers := List(
   tlGitHubDev("henricook", "Henri Cook"),
 )
 
+// play-json stopped supporting Java8 in 2.10.1
+ThisBuild / githubWorkflowJavaVersions := List("11", "17").map(JavaSpec.temurin)
+ThisBuild / tlJdkRelease := Some(11)
+
+val Scala212 = "2.12.18"
 val Scala213 = "2.13.12"
-ThisBuild / crossScalaVersions := Seq("2.12.18", Scala213)
+val Scala3 = "3.3.1"
 ThisBuild / scalaVersion := Scala213
+ThisBuild / crossScalaVersions := Seq(Scala212, Scala213, Scala3)
+ThisBuild / tlVersionIntroduced := Map("3" -> "0.23.12")
 
 lazy val root = project.in(file(".")).aggregate(playJson).enablePlugins(NoPublishPlugin)
 
