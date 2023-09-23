@@ -36,5 +36,4 @@ lazy val playJson = project
       "org.typelevel" %%% "munit-cats-effect" % munitCatsEffectVersion % Test,
       "org.http4s" %%% "http4s-laws" % http4sVersion % Test,
     ),
-    Compile / doc / scalacOptions += "-no-link-warnings",
   )
