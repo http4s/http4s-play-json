@@ -32,8 +32,3 @@ val target = Uri.uri("http://mydomain.invalid/sample.json")
 val response: F[Sample] = httpClient.expect[Sample](target)
 ```
 
-## Help needed
-
-This module only has one maintainer. If you would like to help maintain it and provide some much-needed peer review please comment on https://github.com/http4s/http4s-play-json/issues/1 and we'll get in touch.
-
-Other JSON compatibility modules for http4s include: http4s-circe (in the core repo) and [http4s-fabric](https://github.com/http4s/http4s-fabric).
