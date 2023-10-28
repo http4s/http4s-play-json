@@ -35,3 +35,7 @@ val target = Uri.uri("http://mydomain.invalid/sample.json")
 val response: F[Sample] = httpClient.expect[SampleResponse](target)
 ```
 
+## Community
+
+The [Typelevel Discord](https://discord.gg/XF3CXcMzqD) has an #http4s channel. Please join us!
+
