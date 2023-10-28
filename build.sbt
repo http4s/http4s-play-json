@@ -19,7 +19,7 @@ ThisBuild / tlVersionIntroduced := Map("3" -> "0.23.12")
 lazy val root = project.in(file(".")).aggregate(playJson).enablePlugins(NoPublishPlugin)
 
 val http4sVersion = "0.23.23"
-val playJsonVersion = "2.10.2"
+val playJsonVersion = "3.0.0"
 val munitVersion = "1.0.0-M10"
 val munitCatsEffectVersion = "2.0.0-M3"
 
@@ -31,7 +31,7 @@ lazy val playJson = project
     startYear := Some(2018),
     libraryDependencies ++= Seq(
       "org.http4s" %%% "http4s-jawn" % http4sVersion,
-      "com.typesafe.play" %%% "play-json" % playJsonVersion,
+      "org.playframework" %%% "play-json" % playJsonVersion,
       "org.scalameta" %%% "munit-scalacheck" % munitVersion % Test,
       "org.typelevel" %%% "munit-cats-effect" % munitCatsEffectVersion % Test,
       "org.http4s" %%% "http4s-laws" % http4sVersion % Test,
