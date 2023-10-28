@@ -39,3 +39,6 @@ val response: F[Sample] = httpClient.expect[SampleResponse](target)
 
 The [Typelevel Discord](https://discord.gg/XF3CXcMzqD) has an #http4s channel. Please join us!
 
+## See also
+
+Other JSON compatibility modules for http4s include: http4s-circe (in the core repo) and [http4s-fabric](https://github.com/http4s/http4s-fabric).
