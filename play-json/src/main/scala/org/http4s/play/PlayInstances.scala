@@ -18,6 +18,7 @@ package org.http4s.play
 
 import cats.effect.Concurrent
 import fs2.Chunk
+import org.http4s.DecodeFailure
 import org.http4s.DecodeResult
 import org.http4s.EntityDecoder
 import org.http4s.EntityEncoder
@@ -28,16 +29,25 @@ import org.http4s.Uri
 import org.http4s.headers.`Content-Type`
 import org.http4s.jawn
 import org.http4s.play.Parser.facade
-import play.api.libs.json._
+import play.api.libs.json.*
 
 trait PlayInstances {
+  protected def jsonDecodeError: (JsValue, PlayJsonDecodingFailures) => DecodeFailure =
+    PlayInstances.defaultJsonDecodeError
+
   def jsonOf[F[_]: Concurrent, A](implicit decoder: Reads[A]): EntityDecoder[F, A] =
+    jsonOfWithErrorDecoder(jsonDecodeError)
+
+  def jsonOfWithErrorDecoder[F[_]: Concurrent, A](
+      decodeErrorHandler: (JsValue, PlayJsonDecodingFailures) => DecodeFailure
+  )(implicit decoder: Reads[A]): EntityDecoder[F, A] =
     jsonDecoder[F].flatMapR { json =>
       decoder
         .reads(json)
         .fold(
-          _ =>
-            DecodeResult.failureT(InvalidMessageBodyFailure(s"Could not decode JSON: $json", None)),
+          errors =>
+            DecodeResult
+              .failureT(decodeErrorHandler(json, PlayJsonDecodingFailures.fromJsResult(errors))),
           DecodeResult.successT(_),
         )
     }
@@ -72,5 +82,51 @@ trait PlayInstances {
   implicit class MessageSyntax[F[_]: Concurrent](self: Message[F]) {
     def decodeJson[A: Reads]: F[A] =
       self.as(implicitly, jsonOf[F, A])
+  }
+}
+
+sealed abstract case class PlayInstancesBuilder private[play] (
+    jsonDecodeError: (JsValue, PlayJsonDecodingFailures) => DecodeFailure =
+      PlayInstances.defaultJsonDecodeError
+) { self =>
+  def withJsonDecodeError(
+      f: (JsValue, PlayJsonDecodingFailures) => DecodeFailure
+  ): PlayInstancesBuilder =
+    this.copy(jsonDecodeError = f)
+
+  protected def copy(
+      jsonDecodeError: (JsValue, PlayJsonDecodingFailures) => DecodeFailure = self.jsonDecodeError
+  ): PlayInstancesBuilder =
+    new PlayInstancesBuilder(
+      jsonDecodeError
+    ) {}
+
+  def build: PlayInstances =
+    new PlayInstances {
+      override val jsonDecodeError: (JsValue, PlayJsonDecodingFailures) => DecodeFailure =
+        self.jsonDecodeError
+    }
+
+}
+
+object PlayInstances {
+  val builder: PlayInstancesBuilder = new PlayInstancesBuilder() {}
+
+  private[play] lazy val defaultJsonDecodeError
+      : (JsValue, PlayJsonDecodingFailures) => DecodeFailure = { (json, failures) =>
+    jsonDecodeErrorHelper(json, Json.stringify, failures)
+  }
+
+  private def jsonDecodeErrorHelper(
+      json: JsValue,
+      jsonToString: JsValue => String,
+      failures: PlayJsonDecodingFailures,
+  ): DecodeFailure = {
+    val str: String = jsonToString(json)
+
+    InvalidMessageBodyFailure(
+      s"Could not decode JSON: $str",
+      Some(failures),
+    )
   }
 }

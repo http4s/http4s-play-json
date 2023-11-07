@@ -31,6 +31,13 @@ import org.scalacheck.Prop.forAll
 
 // Originally based on CirceSpec
 class PlaySuite extends CatsEffectSuite with ScalaCheckSuite {
+  private val PlayInstancesWithCustomErrors = PlayInstances.builder.withJsonDecodeError {
+    (json, failures) =>
+      val failureStr = failures.failures.sortBy(_.toString).mkString_("", ", ", "")
+      InvalidMessageBodyFailure(
+        s"Custom Could not decode JSON: ${Json.stringify(json)}, errors: $failureStr"
+      )
+  }.build
 
   def writeToString[A](a: A)(implicit W: EntityEncoder[IO, A]): IO[String] =
     Stream
@@ -87,7 +94,10 @@ class PlaySuite extends CatsEffectSuite with ScalaCheckSuite {
 
   sealed case class Foo(bar: Int)
   private val foo = Foo(42)
-  implicit val format: OFormat[Foo] = Json.format[Foo]
+  implicit val FooFormat: OFormat[Foo] = Json.format[Foo]
+
+  sealed case class Bar(a: Int, b: String)
+  implicit val BarFormat: OFormat[Bar] = Json.format[Bar]
 
   val json: JsValue = Json.obj("test" -> JsString("PlaySupport"))
 
@@ -113,6 +123,19 @@ class PlaySuite extends CatsEffectSuite with ScalaCheckSuite {
     val result = jsonOf[IO, Foo]
       .decode(Request[IO]().withEntity(Json.obj("bar" -> JsNumber(42)): JsValue), strict = true)
     result.value.assertEquals(Right(Foo(42)))
+  }
+
+  test("jsonOf should fail with a custom message from a decoder") {
+    val result = PlayInstancesWithCustomErrors
+      .jsonOf[IO, Bar]
+      .decode(Request[IO]().withEntity(Json.obj("bar1" -> JsNumber(42)): JsValue), strict = true)
+    result.value.assertEquals(
+      Left(
+        InvalidMessageBodyFailure(
+          "Custom Could not decode JSON: {\"bar1\":42}, errors: PlayJsonDecodingFailure at .a: error.path.missing, PlayJsonDecodingFailure at .b: error.path.missing"
+        )
+      )
+    )
   }
 
   property("Uri codec round trip") {
