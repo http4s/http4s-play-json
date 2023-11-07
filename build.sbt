@@ -3,10 +3,11 @@ ThisBuild / tlMimaPreviousVersions ++= (0 to 11).map(y => s"0.23.$y").toSet
 ThisBuild / developers := List(
   tlGitHubDev("rossabaker", "Ross A. Baker"),
   tlGitHubDev("henricook", "Henri Cook"),
+  tlGitHubDev("matmannion", "Mat Mannion"),
 )
 
 // play-json stopped supporting Java8 in 2.10.1
-ThisBuild / githubWorkflowJavaVersions := List("11", "17").map(JavaSpec.temurin)
+ThisBuild / githubWorkflowJavaVersions := List("11", "17", "21").map(JavaSpec.temurin)
 ThisBuild / tlJdkRelease := Some(11)
 
 val Scala212 = "2.12.18"
