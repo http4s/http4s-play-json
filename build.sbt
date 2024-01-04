@@ -1,4 +1,5 @@
 ThisBuild / tlBaseVersion := "0.23"
+// 0.23.0-11 were tags from this project before it was split out from the main http4s repository
 ThisBuild / tlMimaPreviousVersions ++= (0 to 11).map(y => s"0.23.$y").toSet
 ThisBuild / developers := List(
   tlGitHubDev("rossabaker", "Ross A. Baker"),

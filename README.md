@@ -4,7 +4,7 @@ Provides `EntityEncoder` and `EntityDecoder` support for [play-json](https://git
 
 ## SBT Setup
 ```sbt
-libraryDependencies += "org.http4s" %% "http4s-play-json" % "0.23.12"
+libraryDependencies += "org.http4s" %% "http4s-play-json" % "0.23.13"
 ```
 
 ## Usage
