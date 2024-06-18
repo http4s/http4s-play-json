@@ -17,7 +17,7 @@
 package org.http4s.play
 
 import cats.data.NonEmptyList
-import cats.syntax.all.*
+import cats.syntax.all._
 import play.api.libs.json.JsPath
 import play.api.libs.json.JsonValidationError
 
