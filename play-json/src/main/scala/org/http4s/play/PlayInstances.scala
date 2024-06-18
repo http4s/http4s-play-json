@@ -29,7 +29,7 @@ import org.http4s.Uri
 import org.http4s.headers.`Content-Type`
 import org.http4s.jawn
 import org.http4s.play.Parser.facade
-import play.api.libs.json.*
+import play.api.libs.json._
 
 trait PlayInstances {
   protected def jsonDecodeError: (JsValue, PlayJsonDecodingFailures) => DecodeFailure =
