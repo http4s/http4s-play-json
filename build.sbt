@@ -14,7 +14,7 @@ ThisBuild / githubWorkflowJavaVersions := List("11", "17", "21").map(JavaSpec.te
 ThisBuild / tlJdkRelease := Some(11)
 
 val Scala212 = "2.12.20"
-val Scala213 = "2.13.14"
+val Scala213 = "2.13.15"
 val Scala3 = "3.3.3"
 ThisBuild / scalaVersion := Scala213
 ThisBuild / crossScalaVersions := Seq(Scala212, Scala213, Scala3)
