@@ -15,7 +15,7 @@ ThisBuild / tlJdkRelease := Some(11)
 
 val Scala212 = "2.12.20"
 val Scala213 = "2.13.16"
-val Scala3 = "3.3.4"
+val Scala3 = "3.3.6"
 ThisBuild / scalaVersion := Scala213
 ThisBuild / crossScalaVersions := Seq(Scala212, Scala213, Scala3)
 ThisBuild / tlVersionIntroduced := Map("3" -> "0.23.12")
@@ -25,7 +25,7 @@ lazy val root = project.in(file(".")).aggregate(playJson).enablePlugins(NoPublis
 val http4sVersion = "0.23.30"
 val playJsonVersion = "3.0.4"
 val munitVersion = "1.1.0"
-val munitCatsEffectVersion = "2.0.0"
+val munitCatsEffectVersion = "2.1.0"
 
 lazy val playJson = project
   .in(file("play-json"))
