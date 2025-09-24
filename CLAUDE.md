@@ -6,11 +6,35 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is `http4s-play-json`, a library that provides `EntityEncoder` and `EntityDecoder` support for Play JSON in http4s applications. The library enables seamless JSON serialization/deserialization using Play Framework's JSON library within http4s servers and clients.
 
+## Setup
+
+### Tool Management with mise
+This project uses [mise](https://mise.jdx.dev) for managing Java, SBT, and Scala versions:
+
+```bash
+# Install mise (if not already installed)
+curl https://mise.run | sh
+
+# Install project tools automatically
+mise install
+
+# Verify tools are available
+java --version    # Should be Java 21 (Temurin)
+sbt --version     # Should be SBT 1.11.6
+scala --version   # Should be Scala 2.13.16
+```
+
+The `mise.toml` file configures:
+- Java 21 (Temurin) as the default JDK
+- SBT 1.11.6
+- Scala 2.13.16
+- Optimized SBT JVM settings
+
 ## Commands
 
 ### Build and Test
 - `sbt test` - Run all tests
-- `sbt "++ 2.13" test` - Run tests for specific Scala version (2.12, 2.13, 3)
+- `sbt "++ 2.13" test` - Run tests for specific Scala version (2.13, 3)
 - `sbt +test` - Run tests across all Scala versions
 
 ### Code Quality
@@ -20,6 +44,10 @@ This is `http4s-play-json`, a library that provides `EntityEncoder` and `EntityD
 - `sbt 'scalafixAll --check'` - Check scalafix lints (Scala 2.x only)
 - `sbt scalafixAll` - Apply scalafix rules
 - `sbt mimaReportBinaryIssues` - Check binary compatibility
+
+### Code Coverage
+- `sbt coverage test coverageReport` - Generate test coverage report
+- `sbt coverageOff` - Turn off coverage instrumentation
 
 ### Documentation
 - `sbt doc` - Generate API documentation
@@ -88,9 +116,10 @@ val service = HttpRoutes.of[F] {
 - OrganizeImports for consistent import ordering
 
 ### Cross-Compilation
-- Supports Scala 2.12.20, 2.13.16, and 3.3.6
+- Supports Scala 2.13.16 and 3.3.6
 - Scala 3 support introduced in version 0.23.12
-- Java 11, 17, and 21 compatibility (with some version restrictions)
+- Java 8, 11, 17, and 21 compatibility
+- JVM-only (play-json uses Jackson, no ScalaJS/Native support)
 
 ### Dependencies
 - http4s 0.23.32
