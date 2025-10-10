@@ -42,7 +42,7 @@ ThisBuild / tlVersionIntroduced := Map("3" -> "0.23.12")
 lazy val root = project.in(file(".")).aggregate(playJson).enablePlugins(NoPublishPlugin)
 
 val http4sVersion = "0.23.32"
-val playJsonVersion = "3.0.5"
+val playJsonVersion = "3.0.6"
 val munitVersion = "1.2.0"
 val munitCatsEffectVersion = "2.1.0"
 
