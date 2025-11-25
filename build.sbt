@@ -34,7 +34,7 @@ ThisBuild / githubWorkflowAddedJobs ++= Seq(
 )
 
 val Scala213 = "2.13.16"
-val Scala3 = "3.3.6"
+val Scala3 = "3.3.7"
 ThisBuild / scalaVersion := Scala213
 ThisBuild / crossScalaVersions := Seq(Scala213, Scala3)
 ThisBuild / tlVersionIntroduced := Map("3" -> "0.23.12")
