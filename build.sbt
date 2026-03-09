@@ -44,7 +44,7 @@ lazy val root = project.in(file(".")).aggregate(playJson).enablePlugins(NoPublis
 val http4sVersion = "0.23.33"
 val playJsonVersion = "3.0.6"
 val munitVersion = "1.2.0"
-val munitCatsEffectVersion = "2.1.0"
+val munitCatsEffectVersion = "2.2.0"
 
 lazy val playJson = project
   .in(file("play-json"))
